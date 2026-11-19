@@ -36,6 +36,6 @@ def load_config(env: Mapping[str, str] | None = None) -> Config:
         stall_timeout_s=int(env.get("STALL_TIMEOUT_S") or 120),
         progress_log_every=int(env.get("PROGRESS_LOG_EVERY") or 25),
         browser_channel=env.get("BROWSER_CHANNEL") or "chrome",
-        headless=_bool(env.get("HEADLESS") or "false"),
+        headless=_bool(env.get("HEADLESS") or "true"),
         ring_prefix=env.get("RING_PREFIX") or "833",
     )

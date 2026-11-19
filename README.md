@@ -1,7 +1,7 @@
 # RTR images automation
 
 Reads `rings.csv` (`sku, shape, carat`) and, for each row, opens the ring in the RTR admin
-panel in a visible Chrome window, opens Script_1, sets Carats and the shape, clicks BUILD and
+panel in a headless Chrome (no window; set `HEADLESS=false` in `.env` to watch it), opens Script_1, sets Carats and the shape, clicks BUILD and
 saves every downloaded image to `output/<SKU>_<CODE>/`.
 
 ## Setup

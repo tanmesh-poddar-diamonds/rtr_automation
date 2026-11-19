@@ -15,7 +15,7 @@ def test_defaults_and_types():
     assert cfg.stall_timeout_s == 120
     assert cfg.progress_log_every == 25
     assert cfg.browser_channel == "chrome"
-    assert cfg.headless is False
+    assert cfg.headless is True
     assert cfg.ring_prefix == "833"
 
 
