@@ -1,0 +1,11 @@
+.env
+output/
+logs/
+summary.csv
+__pycache__/
+.pytest_cache/
+.superpowers/
+.venv/
+summary_*.csv
+smoke_summary.csv
+~$*
