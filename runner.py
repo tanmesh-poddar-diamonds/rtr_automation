@@ -46,8 +46,8 @@ def _open_with_retry(req, drv, log, res) -> bool:
 def run_ring(req, drv, cfg, log, now=time.monotonic, max_images=None, force=False) -> RingResult:
     started = now()
     res = RingResult(sku=req.sku, shape=req.shape, carat=req.carat, status="failed")
-    folder = ring_dir(cfg.output_dir, req.key, create=False)
-    marker = folder / ".complete"
+    folder = ring_dir(cfg.output_dir, req.sku, create=False)  # one folder per SKU, shared by all its rings
+    marker = folder / f".complete_{req.key}"  # per ring, so finishing one carat doesn't skip the others
     if force:
         marker.unlink(missing_ok=True)
     elif marker.exists():

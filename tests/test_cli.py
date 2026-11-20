@@ -22,7 +22,7 @@ def test_full_cli_run_writes_summary_logs_and_invalid_rows(tmp_path, monkeypatch
     assert code == 1  # one invalid row
     rows = list(csv.DictReader((tmp_path / "summary.csv").open(encoding="utf-8")))
     assert [(r["sku"], r["status"]) for r in rows] == [("A1", "done"), ("B2", "invalid")]
-    assert (tmp_path / "output" / "A1_PR_1.5" / "x.jpg").exists()
+    assert (tmp_path / "output" / "A1" / "x.jpg").exists()
     assert (tmp_path / "logs" / "A1_PR_1.5.log").exists()
     assert "secret" not in (tmp_path / "logs" / "_run.log").read_text(encoding="utf-8")
 
@@ -85,7 +85,7 @@ def test_shard_runs_only_its_skus_and_uses_its_own_summary_and_run_log(tmp_path,
     assert [(r["sku"], r["shape"]) for r in rows] == [("B2", "Pear"), ("B2", "Round")]
     assert not (tmp_path / "summary.csv").exists()
     assert (tmp_path / "logs" / "_run_shard2.log").exists()
-    assert not (tmp_path / "output" / "A1_PR_1.5").exists()
+    assert not (tmp_path / "output" / "A1").exists()
 
 
 def test_bad_shard_value_is_a_config_error(tmp_path, monkeypatch):

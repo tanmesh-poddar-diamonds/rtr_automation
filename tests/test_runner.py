@@ -31,9 +31,9 @@ def test_happy_path_done_and_panel_configured_in_order(tmp_path):
     assert names == ["open_ring", "open_panel", "set_carat", "select_only_shape",
                      "ensure_all_colours", "start_build"]
     assert ("set_carat", "1.5") in drv.calls and ("select_only_shape", "Pear") in drv.calls
-    folder = tmp_path / "out" / "A1_PR"
+    folder = tmp_path / "out" / "A1"
     assert sorted(p.name for p in folder.iterdir() if p.suffix == ".jpg") == ["img-1.jpg", "img-2.jpg", "img-3.jpg"]
-    assert (folder / ".complete").exists()
+    assert (folder / ".complete_A1_PR").exists()
 
 
 def test_not_found(tmp_path):
@@ -60,7 +60,7 @@ def test_stall_clicks_stop_and_reports_stalled(tmp_path):
 
 
 def test_resume_skips_existing_files(tmp_path):
-    folder = ring_dir(tmp_path / "out", "A1_PR")
+    folder = ring_dir(tmp_path / "out", "A1")
     (folder / "img-1.jpg").write_bytes(b"already here")
     clock = Clock()
     drv = FakeDriver(clock, steps=[((1, 2), [dl(1)]), ((2, 2), [dl(2)])])
@@ -126,8 +126,8 @@ def test_done_ring_writes_marker_and_second_run_is_skipped_without_touching_the_
     clock = Clock()
     first = FakeDriver(clock, steps=[((1, 1), [dl(1)])])
     assert run_ring(req(), first, cfg(tmp_path), LOG, now=clock).status == "done"
-    assert (tmp_path / "out" / "A1_PR" / ".complete").exists()
-    second = FakeDriver(clock, steps=[((1, 1), [dl(1)])])
+    assert (tmp_path / "out" / "A1" / ".complete_A1_PR").exists()
+    second =FakeDriver(clock, steps=[((1, 1), [dl(1)])])
     res = run_ring(req(), second, cfg(tmp_path), LOG, now=clock)
     assert res.status == "skipped" and "already complete" in res.message
     assert second.calls == []
@@ -142,13 +142,13 @@ def test_unfinished_rings_never_get_the_marker(tmp_path):
     killed = FakeDriver(clock, build_raises=KeyboardInterrupt())
     assert run_ring(req("K1"), killed, cfg(tmp_path), LOG, now=clock).interrupted
     for sku in ("S1", "L1", "K1"):
-        assert not (tmp_path / "out" / f"{sku}_PR" / ".complete").exists()
+        assert not (tmp_path / "out" / sku / f".complete_{sku}_PR").exists()
 
 
 def test_force_rebuilds_a_complete_ring_and_drops_a_stale_marker_if_it_fails(tmp_path):
     clock = Clock()
     run_ring(req(), FakeDriver(clock, steps=[((1, 1), [dl(1)])]), cfg(tmp_path), LOG, now=clock)
-    marker = tmp_path / "out" / "A1_PR" / ".complete"
+    marker = tmp_path / "out" / "A1" / ".complete_A1_PR"
     assert marker.exists()
     ok = FakeDriver(clock, steps=[((1, 1), [dl(1)])])
     assert run_ring(req(), ok, cfg(tmp_path), LOG, now=clock, force=True).status == "done"
@@ -165,14 +165,14 @@ def test_ring_is_done_when_files_reach_the_total_even_though_the_counter_stops_o
     res = run_ring(req(), drv, cfg(tmp_path, stall=5), LOG, now=clock)
     assert (res.status, res.downloaded) == ("done", 5)
     assert ("stop_build",) not in drv.calls
-    assert (tmp_path / "out" / "A1_PR" / ".complete").exists()
+    assert (tmp_path / "out" / "A1" / ".complete_A1_PR").exists()
 
 
 def test_a_ring_that_never_opens_leaves_no_folder_behind(tmp_path):
     clock = Clock()
     assert run_ring(req(), FakeDriver(clock, found=False), cfg(tmp_path), LOG, now=clock).status == "not_found"
     assert run_ring(req("B1"), FakeDriver(clock, open_failures=2), cfg(tmp_path), LOG, now=clock).status == "failed"
-    assert not (tmp_path / "out" / "A1_PR").exists()
+    assert not (tmp_path / "out" / "A1").exists()
     assert not (tmp_path / "out" / "B1_PR").exists()
 
 
